@@ -17,8 +17,8 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    // "noUnusedLocals": true,  // 사용하지 않는 지역변수 있을 때 오류로 처리
+    // "noUnusedParameters": true, // 사용되지 않는 매개변수 오류 처리
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true

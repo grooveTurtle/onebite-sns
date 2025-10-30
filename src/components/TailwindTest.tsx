@@ -1,8 +1,18 @@
-import type tailwindcss from "@tailwindcss/vite";
+import { cn } from "@/lib/utils";
 
 const TailwindTest = () => {
+  const isActive = true;
+
   return (
     <>
+      <div
+        className={
+          cn("w-10 text-sm", isActive) ? "text-green-500" : "text-red-500"
+        }
+      >
+        isActive
+      </div>
+
       {/* 타이포그래프 */}
       <div className="text-xs text-red-500">text-xs</div>
       <div className="text-sm text-[rgb(100,30,200)]">text-sm</div>
@@ -39,6 +49,11 @@ const TailwindTest = () => {
         <div className="h-30 w-10 border">3</div>
         <div className="h-40 w-10 border">4</div>
       </div>
+
+      {/* shadcn/ui 커스텀 컬러 */}
+      <div className="text-primary">Primary</div>
+      <div className="text-muted">Muted</div>
+      <div className="text-destructive">Destructive</div>
     </>
   );
 };

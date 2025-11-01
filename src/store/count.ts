@@ -1,6 +1,12 @@
 import { create } from "zustand";
 // state, action 함수를 포함하는 객체인 store를 생성
-import { combine } from "zustand/middleware";
+import {
+  combine,
+  subscribeWithSelector,
+  persist,
+  createJSONStorage,
+  devtools,
+} from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
 // type Store = {
@@ -11,34 +17,68 @@ import { immer } from "zustand/middleware/immer";
 //   };
 // };
 
-// combine middleware : store의 타입을 정의해주지 않아도 state 객체의 타입을 자동으로 추론한다.
 export const useCountStore = create(
-  immer(
-    combine({ count: 0 }, (set, get) => ({
-      actions: {
-        increase: () => {
-          //   set((state) => ({
-          //     // state의 타입만 추론하므로 헷갈리지 않게 store -> state
-          //     count: state.count + 1,
-          //   }));
+  // devtools: redux devtools 등으로 state 값 변동 체크시
+  devtools(
+    // persist: 자동으로 localStorage에 저장해줌.
+    persist(
+      // subscribe side effect 사용시
+      subscribeWithSelector(
+        immer(
+          // combine middleware : store의 타입을 정의해주지 않아도 state 객체의 타입을 자동으로 추론한다.
+          combine({ count: 0 }, (set, get) => ({
+            actions: {
+              increase: () => {
+                //   set((state) => ({
+                //     // state의 타입만 추론하므로 헷갈리지 않게 store -> state
+                //     count: state.count + 1,
+                //   }));
 
-          // 불변성 관리를 포함하고 있던 위의 코드를 다음과 같이 간단한 구조로 변경할 수 있다.
-          set((state) => {
-            state.count += 1;
-          });
-        },
-        decrease: () => {
-          //   set((state) => ({
-          //     count: state.count - 1,
-          //   }));
+                // immer: 불변성 관리를 포함하고 있던 위의 코드를 다음과 같이 간단한 구조로 변경할 수 있다.
+                set((state) => {
+                  state.count += 1;
+                });
+              },
+              decrease: () => {
+                //   set((state) => ({
+                //     count: state.count - 1,
+                //   }));
 
-          set((state) => {
-            state.count -= 1;
-          });
-        },
+                set((state) => {
+                  state.count -= 1;
+                });
+              },
+            },
+          })),
+        ),
+      ),
+      {
+        name: "countStore",
+        // partialize 없이 사용시, actions에 빈 객체가 들어가게 되면서, 이후 localStorage에 있는 actions의 이벤트를 실행할 수 없게 되는 즈앗ㅇ 발생
+        // 이는 actions 내의 함수에 많은 정보들을 json으로 표현하여 저장할 수 없는 한계점 때문에 발생.
+        // 따라서 localStorage에 저장 될 객체만 따로 지정한다.
+        partialize: (store) => ({ count: store.count }),
+        storage: createJSONStorage(() => sessionStorage),
       },
-    })),
+    ),
+    {
+      name: "countStore",
+    },
   ),
+);
+
+useCountStore.subscribe(
+  (store) => store.count,
+  (count, prevCount) => {
+    // listener function
+    console.log("prevCount:::", prevCount);
+    console.log("count:::", count);
+
+    // side effect시 update를 처리한다면..
+    // 현재 count state 값을 반환해줌
+    // const store = useCountStore.getState();
+    // useCountStore.setState((store) => ({count: 10}))
+  },
 );
 
 // export const useCountStore = create<Store>((set, get) => ({

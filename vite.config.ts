@@ -11,4 +11,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    watch: {
+      ignored: ["**/server/**"], // server 폴더 아래의 파일을 감지하지 않음(변화가 생겨도 rerendering 하지 않음)
+    },
+  },
 });

@@ -1,4 +1,3 @@
-import { useDeleteTodo } from "@/store/todos";
 import { Button } from "../ui/button";
 import { Link } from "react-router";
 
@@ -6,13 +5,11 @@ export default function TodoItem({
   id,
   content,
 }: {
-  id: number;
+  id: string;
   content: string;
 }) {
-  const deleteTodo = useDeleteTodo();
   const handleDeleteClick = () => {
     console.log("delete");
-    deleteTodo(id);
   };
   return (
     <div className="flex items-center justify-between border p-2">
